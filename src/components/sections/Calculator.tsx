@@ -1,263 +1,244 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { Calculator, TrendingUp, Calendar, Package } from "lucide-react";
-import { calculateGrowth, formatCurrency } from "@/lib/utils";
+import { Calculator, TrendingUp, Package, ArrowRightLeft, Info } from "lucide-react";
 
 type ModelType = "horizontal" | "vertical";
 
+function formatCurrency(n: number) {
+    return n.toLocaleString("ar-SA") + " ر";
+}
+
+function calcResults(amount: number, months: number, model: ModelType) {
+    if (model === "horizontal") {
+        const monthlyProfit = Math.round(amount * 0.045);
+        return Array.from({ length: months }, (_, i) => ({
+            month: i + 1,
+            profit: monthlyProfit,
+            total: amount,
+            cumProfit: monthlyProfit * (i + 1),
+        }));
+    } else {
+        const results = [];
+        let value = amount;
+        for (let i = 1; i <= months; i++) {
+            const profit = Math.round(value * 0.045);
+            const newValue = value + profit;
+            results.push({ month: i, profit, total: newValue, cumProfit: newValue - amount });
+            value = newValue;
+        }
+        return results;
+    }
+}
+
+const PRESETS = [1000, 5000, 10000, 50000];
+
 export default function CalculatorSection() {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const isInView = useInView(ref, { once: true, margin: "-80px" });
 
-    const [amount, setAmount] = useState(1000);
+    const [amount, setAmount] = useState(10000);
     const [months, setMonths] = useState(12);
-    const [model, setModel] = useState<ModelType>("vertical");
-    const [results, setResults] = useState<any[]>([]);
+    const [model, setModel] = useState<ModelType>("horizontal");
+    const [results, setResults] = useState(() => calcResults(10000, 12, "horizontal"));
 
     useEffect(() => {
-        if (model === "vertical") {
-            setResults(calculateGrowth(amount, months));
-        } else {
-            // Horizontal model - fixed monthly profit
-            const monthlyProfit = Math.round(amount * 0.045);
-            const data = [];
-            for (let i = 1; i <= months; i++) {
-                data.push({
-                    month: i,
-                    value: amount,
-                    profit: monthlyProfit,
-                    total: amount,
-                });
-            }
-            setResults(data);
-        }
+        setResults(calcResults(amount, months, model));
     }, [amount, months, model]);
 
-    const totalProfit = results.reduce((sum, r) => sum + r.profit, 0);
-    const finalValue = model === "vertical"
-        ? results[results.length - 1]?.total || 0
-        : amount;
+    const totalProfit = results.reduce((s, r) => s + r.profit, 0);
+    const finalValue = model === "vertical" ? results[results.length - 1]?.total ?? amount : amount;
+    const returnPct = Math.round((totalProfit / amount) * 100);
+    const maxBar = Math.max(...results.slice(0, 12).map((r) => r.profit));
 
     return (
-        <section id="calculator" className="section-padding bg-dark-50/30">
+        <section id="calculator" className="section-padding bg-white">
             <div className="container-custom mx-auto" ref={ref}>
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
-                    className="text-center max-w-3xl mx-auto mb-16"
+                    transition={{ duration: 0.5 }}
+                    className="section-header"
                 >
-                    <span className="text-gold font-semibold text-sm mb-4 block">
-                        الحاسبة الذكية
-                    </span>
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+                    <span className="section-eyebrow">الحاسبة الذكية</span>
+                    <h2 className="section-title">
                         احسب <span className="text-gradient">حصّتك المستهدفة</span>
                     </h2>
-                    <p className="text-muted text-lg">
-                        حدّد فترة شراكتك وقيمة البضاعة، وستحسب الحاسبة تلقائياً الحصص
-                        الشهرية المستهدفة
-                    </p>
+                    <p className="text-muted">حدّد قيمة البضاعة وفترة شراكتك لحساب الحصص المستهدفة تلقائياً</p>
                 </motion.div>
 
-                <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div className="grid lg:grid-cols-2 gap-5 max-w-5xl mx-auto">
                     {/* Inputs */}
                     <motion.div
-                        initial={{ opacity: 0, x: -30 }}
+                        initial={{ opacity: 0, x: -24 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.6 }}
-                        className="card-glass p-8"
+                        transition={{ duration: 0.5 }}
+                        className="rounded-2xl border border-dark-200/50 bg-white shadow-sm p-6 sm:p-7"
                     >
-                        <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                            <Calculator className="w-5 h-5 text-gold" />
+                        <h3 className="text-base font-bold text-foreground mb-5 flex items-center gap-2">
+                            <Calculator className="w-5 h-5 text-primary" />
                             بيانات الشراكة
                         </h3>
 
-                        {/* Model Selection */}
-                        <div className="mb-6">
-                            <label className="block text-muted text-sm mb-3">نوع النموذج</label>
-                            <div className="grid grid-cols-2 gap-3">
-                                <button
-                                    onClick={() => setModel("horizontal")}
-                                    className={`p-4 rounded-xl border transition-all ${model === "horizontal"
-                                        ? "border-primary bg-primary/10 text-primary"
-                                        : "border-dark-100/20 text-muted hover:border-primary/30"
-                                        }`}
-                                >
-                                    <div className="font-semibold mb-1">النموذج الأفقي</div>
-                                    <div className="text-xs opacity-80">حصص شهرية ثابتة</div>
-                                </button>
-                                <button
-                                    onClick={() => setModel("vertical")}
-                                    className={`p-4 rounded-xl border transition-all ${model === "vertical"
-                                        ? "border-gold bg-gold/10 text-gold"
-                                        : "border-dark-100/20 text-muted hover:border-gold/30"
-                                        }`}
-                                >
-                                    <div className="font-semibold mb-1">النموذج الرأسي</div>
-                                    <div className="text-xs opacity-80">نمو تراكمي</div>
-                                </button>
+                        {/* Model */}
+                        <div className="mb-5">
+                            <label className="block text-muted text-xs font-semibold mb-2.5 uppercase tracking-wider">نوع النموذج</label>
+                            <div className="grid grid-cols-2 gap-2.5">
+                                {([
+                                    { id: "horizontal" as const, label: "الأفقي", sub: "حصص ثابتة", icon: ArrowRightLeft },
+                                    { id: "vertical" as const, label: "الرأسي", sub: "نمو تراكمي", icon: TrendingUp },
+                                ]).map((m) => (
+                                    <button
+                                        key={m.id}
+                                        onClick={() => setModel(m.id)}
+                                        className={`p-4 rounded-xl border-2 transition-all text-right ${model === m.id
+                                                ? m.id === "horizontal"
+                                                    ? "border-primary bg-primary/8 text-primary"
+                                                    : "border-gold bg-gold/8 text-gold"
+                                                : "border-dark-200/50 text-muted hover:border-dark-200"
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <m.icon className="w-4 h-4" />
+                                            <span className="font-bold text-sm">{m.label}</span>
+                                        </div>
+                                        <div className="text-xs opacity-75">{m.sub}</div>
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Amount Input */}
-                        <div className="mb-6">
-                            <label className="block text-muted text-sm mb-3">
-                                قيمة البضاعة (ريال)
-                            </label>
+                        {/* Amount slider */}
+                        <div className="mb-5">
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="text-muted text-xs font-semibold uppercase tracking-wider">قيمة البضاعة</label>
+                                <span className="text-xl font-black text-gold">{formatCurrency(amount)}</span>
+                            </div>
                             <input
-                                type="range"
-                                min="1000"
-                                max="100000"
-                                step="1000"
-                                value={amount}
+                                type="range" min="1000" max="100000" step="1000" value={amount}
                                 onChange={(e) => setAmount(Number(e.target.value))}
-                                className="w-full h-2 bg-dark-100 rounded-lg appearance-none cursor-pointer accent-primary mb-3"
+                                className="w-full h-2 bg-dark-100 rounded-full appearance-none cursor-pointer accent-primary mb-2"
+                                style={{ direction: "ltr" }}
                             />
-                            <div className="flex items-center justify-between">
-                                <span className="text-muted text-sm">1,000 ريال</span>
-                                <span className="text-2xl font-bold text-gold">
-                                    {formatCurrency(amount)}
-                                </span>
-                                <span className="text-muted text-sm">100,000 ريال</span>
+                            <div className="flex justify-between text-xs text-muted">
+                                <span>100,000 ر</span>
+                                <span>1,000 ر</span>
+                            </div>
+                            {/* Presets */}
+                            <div className="flex flex-wrap gap-2 mt-3">
+                                {PRESETS.map((p) => (
+                                    <button
+                                        key={p}
+                                        onClick={() => setAmount(p)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${amount === p ? "bg-primary text-white" : "bg-dark-100 text-muted hover:bg-primary/10 hover:text-primary"
+                                            }`}
+                                    >
+                                        {p.toLocaleString("ar-SA")}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Months Input */}
-                        <div className="mb-6">
-                            <label className="block text-muted text-sm mb-3">
-                                فترة الشراكة (شهر)
-                            </label>
+                        {/* Months slider */}
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="text-muted text-xs font-semibold uppercase tracking-wider">فترة الشراكة</label>
+                                <span className="text-xl font-black text-primary">{months} شهر</span>
+                            </div>
                             <input
-                                type="range"
-                                min="3"
-                                max="39"
-                                step="1"
-                                value={months}
+                                type="range" min="3" max="39" step="1" value={months}
                                 onChange={(e) => setMonths(Number(e.target.value))}
-                                className="w-full h-2 bg-dark-100 rounded-lg appearance-none cursor-pointer accent-primary mb-3"
+                                className="w-full h-2 bg-dark-100 rounded-full appearance-none cursor-pointer accent-primary mb-2"
+                                style={{ direction: "ltr" }}
                             />
-                            <div className="flex items-center justify-between">
-                                <span className="text-muted text-sm">3 أشهر</span>
-                                <span className="text-2xl font-bold text-primary">
-                                    {months} شهر
-                                </span>
-                                <span className="text-muted text-sm">39 شهر</span>
+                            <div className="flex justify-between text-xs text-muted">
+                                <span>39 شهراً</span>
+                                <span>3 أشهر</span>
                             </div>
-                        </div>
-
-                        {/* Quick Presets */}
-                        <div className="flex flex-wrap gap-2">
-                            {[1000, 5000, 10000, 50000].map((preset) => (
-                                <button
-                                    key={preset}
-                                    onClick={() => setAmount(preset)}
-                                    className="px-4 py-2 rounded-lg bg-dark-50 text-muted hover:bg-primary/10 hover:text-primary transition-colors text-sm"
-                                >
-                                    {formatCurrency(preset)}
-                                </button>
-                            ))}
                         </div>
                     </motion.div>
 
                     {/* Results */}
                     <motion.div
-                        initial={{ opacity: 0, x: 30 }}
+                        initial={{ opacity: 0, x: 24 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="card-glass p-8"
+                        transition={{ duration: 0.5, delay: 0.15 }}
+                        className="rounded-2xl border border-dark-200/50 bg-white shadow-sm p-6 sm:p-7"
                     >
-                        <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+                        <h3 className="text-base font-bold text-foreground mb-5 flex items-center gap-2">
                             <TrendingUp className="w-5 h-5 text-primary" />
-                            النتائج المتوقعة
+                            النتائج المستهدفة
                         </h3>
 
-                        <div className="space-y-6 mb-8">
-                            <div className="p-5 rounded-xl bg-dark-100/80">
-                                <div className="text-sm text-muted mb-2">إجمالي الأرباح المستهدفة</div>
-                                <div className="text-3xl font-bold text-gold">
-                                    {formatCurrency(totalProfit)}
-                                </div>
+                        <div className="space-y-3 mb-6">
+                            <div className="p-4 rounded-xl bg-gold/8 border border-gold/20">
+                                <div className="text-xs text-muted mb-1 font-medium">إجمالي الأرباح المستهدفة</div>
+                                <div className="text-2xl font-black text-gold">{formatCurrency(totalProfit)}</div>
                             </div>
 
-                            <div className="p-5 rounded-xl bg-primary/10 border border-primary/20">
-                                <div className="text-sm text-primary-light mb-2">
-                                    {model === "vertical" ? "القيمة النهائية للبضاعة" : "قيمة البضاعة الثابتة"}
+                            <div className="p-4 rounded-xl bg-primary/8 border border-primary/20">
+                                <div className="text-xs text-primary mb-1 font-medium">
+                                    {model === "vertical" ? "القيمة النهائية للبضاعة" : "قيمة البضاعة الأصلية"}
                                 </div>
-                                <div className="text-3xl font-bold text-primary">
-                                    {formatCurrency(finalValue)}
-                                </div>
+                                <div className="text-2xl font-black text-primary">{formatCurrency(finalValue)}</div>
                             </div>
 
-                            <div className="p-5 rounded-xl bg-gold/10 border border-gold/20">
-                                <div className="text-sm text-gold mb-2">العائد المستهدف</div>
-                                <div className="text-3xl font-bold text-gold">
-                                    {model === "vertical"
-                                        ? `${Math.round((finalValue - amount) / amount * 100)}%`
-                                        : `${Math.round(totalProfit / amount * 100)}%`
-                                    }
-                                </div>
+                            <div className="p-4 rounded-xl bg-dark-100 border border-dark-200/40">
+                                <div className="text-xs text-muted mb-1 font-medium">العائد الإجمالي المستهدف</div>
+                                <div className="text-2xl font-black text-foreground">{returnPct}%</div>
                             </div>
                         </div>
 
-                        {/* Mini Chart */}
-                        <div className="h-32 flex items-end gap-1">
+                        {/* Bar chart */}
+                        <div className="h-24 flex items-end gap-1 mb-1">
                             {results.slice(0, 12).map((r, i) => (
                                 <div
                                     key={i}
-                                    className="flex-1 bg-primary/30 rounded-t hover:bg-primary/50 transition-colors"
+                                    className="flex-1 rounded-t bg-primary/30 hover:bg-primary/60 transition-colors"
                                     style={{
-                                        height: `${(r.profit / Math.max(...results.map(x => x.profit))) * 100}%`,
-                                        minHeight: "10%",
+                                        height: `${Math.max((r.profit / maxBar) * 100, 8)}%`,
                                     }}
                                     title={`شهر ${r.month}: ${formatCurrency(r.profit)}`}
                                 />
                             ))}
                         </div>
-                        <div className="text-center text-muted text-xs mt-2">
-                            توزيع الحصص الشهرية (أول 12 شهر)
-                        </div>
+                        <div className="text-center text-muted text-xs">توزيع الحصص الشهرية (أول 12 شهراً)</div>
                     </motion.div>
                 </div>
 
                 {/* Examples */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.5 }}
-                    className="max-w-4xl mx-auto mt-12"
+                    transition={{ delay: 0.4 }}
+                    className="max-w-4xl mx-auto mt-8"
                 >
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div className="card-glass p-6 border-primary/20">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Package className="w-5 h-5 text-primary" />
-                                <h4 className="font-bold text-foreground">النموذج الأفقي</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Package className="w-4 h-4 text-primary" />
+                                <h4 className="font-bold text-foreground text-sm">النموذج الأفقي</h4>
                             </div>
-                            <p className="text-muted text-sm mb-4">
-                                لو تملّكتَ بضاعة بـ 10,000 ريال، تستهدف الحصول على حصة شهرية
-                                قدرها 450 ريالاً*، بمتوسط هامش ربح 4.5% شهرياً
+                            <p className="text-muted text-xs leading-relaxed mb-3">
+                                تملّك بضاعة بـ 10,000 ريال، تستهدف حصة شهرية ثابتة قدرها 450 ريالاً*، بمتوسط هامش ربح 4.5% شهرياً
                             </p>
-                            <div className="text-primary font-semibold">
-                                {formatCurrency(450)} / شهر
-                            </div>
+                            <div className="text-primary font-black text-lg">450 ريال / شهر</div>
                         </div>
-
-                        <div className="card-glass p-6 border-gold/20">
-                            <div className="flex items-center gap-2 mb-4">
-                                <TrendingUp className="w-5 h-5 text-gold" />
-                                <h4 className="font-bold text-foreground">النموذج الرأسي</h4>
+                        <div className="rounded-2xl border border-gold/25 bg-gold/5 p-5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <TrendingUp className="w-4 h-4 text-gold" />
+                                <h4 className="font-bold text-foreground text-sm">النموذج الرأسي</h4>
                             </div>
-                            <p className="text-muted text-sm mb-4">
-                                لو بدأتَ شراكتك بـ 1,000 ريال بضاعة، تستهدف حصة 45 ريالاً شهرياً*.
-                                في الشهر التالي، تصبح قيمة بضاعتك 1,045 ريالاً
+                            <p className="text-muted text-xs leading-relaxed mb-3">
+                                بدأت بـ 1,000 ريال بضاعة، تستهدف حصة 45 ريالاً شهرياً*. في الشهر التالي تصبح 1,045 ريالاً — وهكذا تنمو دورة التراكم
                             </p>
-                            <div className="text-gold font-semibold">
-                                نمو مركب شهري
-                            </div>
+                            <div className="text-gold font-black text-lg">نمو مركب شهري</div>
                         </div>
                     </div>
+                    <p className="text-center text-muted/60 text-xs mt-4">
+                        * أرقام مستهدفة وليست ضماناً — العائد الفعلي ضمن نطاق 3.5%–5.5% شهرياً حسب حركة السوق
+                    </p>
                 </motion.div>
             </div>
         </section>

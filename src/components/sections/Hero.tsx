@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
-import { ChevronDown, TrendingUp, Users, Wallet, ArrowLeft } from "lucide-react";
+import { ChevronDown, TrendingUp, Users, Wallet, ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
 
 interface StatItem {
@@ -10,22 +10,23 @@ interface StatItem {
     value: number;
     label: string;
     suffix?: string;
+    color: string;
 }
 
 const stats: StatItem[] = [
-    { icon: Users, value: 1200, label: "شريك تجاري" },
-    { icon: Wallet, value: 45, label: "مليون ريال", suffix: "+" },
-    { icon: TrendingUp, value: 94, label: "نسبة النجاح", suffix: "%" },
+    { icon: Wallet, value: 1000, label: "ريال — بداية مبالغ امتلاك البضاعة (شهرياً)", suffix: "", color: "text-primary" },
+    { icon: TrendingUp, value: 45, label: "ريال حصة شهرية مستهدفة لكل ١٬٠٠٠ ريال بضاعة*", suffix: "", color: "text-gold" },
+    { icon: Users, value: 39, label: "شهراً — مدة المثال التراكمي التوضيحي", suffix: "", color: "text-teal" },
 ];
 
 function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
     const [count, setCount] = useState(0);
     const ref = useRef<HTMLSpanElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
+    const isInView = useInView(ref, { once: true });
 
     useEffect(() => {
         if (!isInView) return;
-        const duration = 2000;
+        const duration = 1800;
         const steps = 60;
         const increment = value / steps;
         let current = 0;
@@ -43,8 +44,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
 
     return (
         <span ref={ref} className="tabular-nums">
-            {count.toLocaleString("ar-SA")}
-            {suffix}
+            {count.toLocaleString("ar-SA")}{suffix}
         </span>
     );
 }
@@ -52,120 +52,146 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
 export default function Hero() {
     return (
         <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden bg-surface">
-            {/* Clean Green Gradient Mesh - No Particles */}
-            <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-surface via-primary-50 to-surface" />
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-primary/5 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] bg-primary/5 rounded-full blur-3xl" />
+            {/* Background gradient mesh */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-white via-primary-50 to-dark-100" />
+                <motion.div
+                    animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-primary/12 to-teal/8 blur-3xl"
+                />
+                <motion.div
+                    animate={{ scale: [1.05, 1, 1.05], opacity: [0.4, 0.7, 0.4] }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-gold/10 to-primary/8 blur-3xl"
+                />
+                {/* Decorative grid */}
+                <div
+                    className="absolute inset-0 opacity-[0.025]"
+                    style={{
+                        backgroundImage: `linear-gradient(rgba(0,176,96,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,176,96,1) 1px, transparent 1px)`,
+                        backgroundSize: "48px 48px",
+                    }}
+                />
             </div>
 
             {/* Content */}
-            <div className="relative z-10 container-custom text-center px-4 pt-24 pb-32 md:pt-20 md:pb-20">
+            <div className="relative z-10 container-custom text-center px-4 pt-24 pb-28 md:pt-24 md:pb-16">
+
+                {/* Badge */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.5 }}
+                    className="flex justify-center mb-6"
                 >
-                    <span className="badge mb-6 md:mb-8">
+                    <div className="badge">
                         <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                         منصة الشراكة التجارية الأولى في السعودية
-                    </span>
+                    </div>
                 </motion.div>
 
+                {/* Headline */}
                 <motion.h1
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] mb-6 tracking-tight"
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] mb-5 tracking-tight"
                 >
-                    <span className="block text-text-primary">استثمر بذكاء</span>
+                    <span className="block text-foreground">استثمر بذكاء</span>
                     <span className="block text-gradient">امتلك بضاعتك</span>
                 </motion.h1>
 
+                {/* Sub */}
                 <motion.p
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="text-base md:text-lg lg:text-xl text-text-secondary max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed"
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="text-base md:text-lg text-muted max-w-lg mx-auto mb-8 leading-relaxed"
                 >
                     شِلّة تمكّنك من دخول عالم التجارة الحقيقية بثقة وأمان.
                     تملّك بضاعة في قطاع المواد الغذائية وحقق عوائد مجزية.
                 </motion.p>
 
-                {/* CTA Buttons - Mobile Optimized */}
+                {/* CTA Buttons */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-12 md:mb-16"
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10 md:mb-14"
                 >
-                    <Link href="#partnership" className="btn-primary w-full sm:w-auto text-base md:text-lg px-8 md:px-10 py-4">
+                    <Link href="#partnership" className="btn-primary w-full sm:w-auto text-base px-8 py-4 rounded-2xl">
                         ابدأ استثمارك الآن
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <Link href="#about" className="btn-secondary w-full sm:w-auto text-base md:text-lg px-8 md:px-10 py-4">
+                    <Link href="#about" className="btn-secondary w-full sm:w-auto text-base px-8 py-4 rounded-2xl">
                         تعرف على المزيد
                     </Link>
                 </motion.div>
 
-                {/* Stats Grid - Responsive */}
+                {/* Trust bar */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="flex items-center justify-center gap-2 mb-10 text-xs text-muted"
+                >
+                    <Shield className="w-3.5 h-3.5 text-primary" />
+                    <span>بضاعة مؤمنة — فواتير رسمية — تقارير شهرية</span>
+                </motion.div>
+
+                {/* Stats Grid */}
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.4 }}
-                    className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 max-w-2xl mx-auto"
+                    transition={{ duration: 0.6, delay: 0.45 }}
+                    className="grid grid-cols-3 gap-3 max-w-2xl mx-auto"
                 >
                     {stats.map((stat, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
-                            className="card p-4 md:p-6 hover:shadow-md transition-shadow"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.5 + index * 0.08 }}
+                            className="bg-white rounded-2xl border border-dark-200/50 p-4 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200"
                         >
-                            <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
-                            <div className="text-2xl md:text-3xl font-bold text-text-primary mb-1 tabular-nums">
+                            <stat.icon className={`w-5 h-5 ${stat.color} mx-auto mb-2`} />
+                            <div className={`text-xl sm:text-2xl font-black mb-0.5 ${stat.color}`}>
                                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                             </div>
-                            <div className="text-xs md:text-sm text-text-secondary">{stat.label}</div>
+                            <div className="text-xs text-muted leading-tight">{stat.label}</div>
                         </motion.div>
                     ))}
                 </motion.div>
             </div>
 
-            {/* Scroll Indicator */}
+            {/* Scroll indicator */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2 }}
-                className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2"
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-1 cursor-pointer"
+                onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
             >
+                <span className="text-xs text-muted">اكتشف المزيد</span>
                 <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                    className="flex flex-col items-center gap-1 cursor-pointer"
-                    onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+                    animate={{ y: [0, 6, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
                 >
-                    <span className="text-xs text-text-muted">اكتشف المزيد</span>
                     <ChevronDown className="w-5 h-5 text-primary" />
                 </motion.div>
             </motion.div>
 
-            {/* Mobile Sticky CTA (Visible only on small screens when scrolled) */}
+            {/* Mobile sticky CTA */}
             <MobileStickyCTA />
         </section>
     );
 }
-
-/* Mobile Sticky CTA Component */
 function MobileStickyCTA() {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => {
-            setVisible(window.scrollY > 300);
-        };
+        const handleScroll = () => setVisible(window.scrollY > 300);
         window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
@@ -176,10 +202,11 @@ function MobileStickyCTA() {
         <motion.div
             initial={{ y: 100 }}
             animate={{ y: 0 }}
-            className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-lg border-t border-border z-50 md:hidden"
+            className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl border-t border-dark-200/50 shadow-2xl z-50 md:hidden"
         >
-            <Link href="#partnership" className="btn-primary w-full text-center">
+            <Link href="#partnership" className="btn-primary w-full text-center text-base py-4 rounded-xl">
                 ابدأ استثمارك الآن
+                <ArrowLeft className="w-5 h-5" />
             </Link>
         </motion.div>
     );

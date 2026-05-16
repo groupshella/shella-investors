@@ -46,7 +46,7 @@ const socialLinks = [
 
 export default function Footer() {
     return (
-        <footer className="relative bg-dark border-t border-gold/20">
+        <footer className="relative overflow-x-hidden bg-dark border-t border-gold/20 pb-[max(1rem,env(safe-area-inset-bottom))]">
             {/* Grid texture background */}
             <div
                 className="absolute inset-0 opacity-[0.04]"
@@ -57,80 +57,103 @@ export default function Footer() {
             />
 
             <div className="relative z-10">
-                {/* Main Footer */}
-                <div className="container-custom py-16">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-                        {/* Brand Column */}
-                        <div className="lg:col-span-2">
-                            <Link href="/" className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center">
-                                    <span className="text-gold font-bold text-xl">ش</span>
+                {/* Main footer — px matches .section-padding; layout avoids awkward md:2-col mix */}
+                <div className="container-custom px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
+                    <div className="flex flex-col gap-10 sm:gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-14 xl:gap-16">
+                        {/* Brand column */}
+                        <div className="min-w-0 lg:max-w-md xl:max-w-lg shrink-0">
+                            <Link
+                                href="/"
+                                className="inline-flex items-center gap-3 mb-5 sm:mb-6 rounded-xl outline-none ring-gold/40 focus-visible:ring-2"
+                            >
+
+                                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-white border border-dark-200/40">
+                                    <img
+                                        src="/favicon.ico"
+                                        alt=""
+                                        width={28}
+                                        height={28}
+                                        className="size-full object-contain"
+                                        aria-hidden
+                                    />
                                 </div>
                                 <span className="text-2xl font-bold text-foreground">شِلّة</span>
                             </Link>
-                            <p className="text-muted leading-relaxed mb-6 max-w-sm">
+                            <p className="mb-6 max-w-prose text-pretty text-muted leading-relaxed sm:max-w-sm">
                                 شريكك التجاري في رحلة الشراكة الذكية والنمو المالي المستدام.
                                 تجارة مُتاحة للجميع في قطاع المواد الغذائية والاستهلاكية.
                             </p>
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 text-muted">
-                                    <Mail className="w-4 h-4 text-gold" />
-                                    <span className="text-sm">support@shella.sa</span>
+                            <div className="space-y-3.5">
+                                <div className="flex items-start gap-3 text-muted">
+                                    <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                                    <span className="min-w-0 break-words text-sm leading-snug" dir="ltr">
+                                        info@shellafood.com
+                                    </span>
                                 </div>
-                                <div className="flex items-center gap-3 text-muted">
-                                    <Phone className="w-4 h-4 text-gold" />
-                                    <span className="text-sm">9200XXXXX</span>
+                                <div className="flex items-start gap-3 text-muted">
+                                    <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                                    <span className="min-w-0 text-sm leading-snug" dir="ltr">
+                                        0599966674
+                                    </span>
                                 </div>
-                                <div className="flex items-center gap-3 text-muted">
-                                    <MapPin className="w-4 h-4 text-gold" />
-                                    <span className="text-sm">الرياض، المملكة العربية السعودية</span>
+                                <div className="flex items-start gap-3 text-muted">
+                                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                                    <span className="min-w-0 text-sm leading-snug">
+                                        مدينه الرياض، مجمع ليسن فيالي، مبنى 13
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Nav Columns */}
-                        {navColumns.map((column) => (
-                            <div key={column.title}>
-                                <h4 className="text-foreground font-semibold mb-4">{column.title}</h4>
-                                <ul className="space-y-3">
-                                    {column.links.map((link) => (
-                                        <li key={link.label}>
-                                            <Link
-                                                href={link.href}
-                                                className="text-muted hover:text-gold transition-colors text-sm"
-                                            >
-                                                {link.label}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
+                        <nav
+                            className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-10 md:grid-cols-3 lg:max-w-2xl lg:gap-x-10 xl:max-w-none"
+                            aria-label="تذييل الصفحة"
+                        >
+                            {navColumns.map((column) => (
+                                <div key={column.title} className="min-w-0">
+                                    <h4 className="mb-3 text-sm font-semibold text-foreground sm:mb-4 sm:text-base">
+                                        {column.title}
+                                    </h4>
+                                    <ul className="space-y-1 sm:space-y-2">
+                                        {column.links.map((link) => (
+                                            <li key={link.label}>
+                                                <Link
+                                                    href={link.href}
+                                                    className="block rounded-md py-2 text-sm text-muted transition-colors hover:text-gold sm:py-1.5"
+                                                >
+                                                    {link.label}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </nav>
                     </div>
                 </div>
 
                 {/* Bottom Bar */}
                 <div className="border-t border-dark-200/20">
-                    <div className="container-custom py-6">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div className="flex items-center gap-6">
-                                {socialLinks.map((social) => (
-                                    <a
-                                        key={social.label}
-                                        href={social.href}
-                                        aria-label={social.label}
-                                        className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-muted hover:text-gold hover:bg-gold/10 transition-all"
-                                    >
-                                        <social.icon className="w-5 h-5" />
-                                    </a>
-                                ))}
+                    <div className="container-custom px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+                        <div className="flex flex-col gap-6">
+                            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                                <p className="order-2 text-center text-sm text-muted sm:order-1 sm:text-start">
+                                    © 2026 شِلّة. جميع الحقوق محفوظة.
+                                </p>
+                                <div className="order-1 flex items-center justify-center gap-3 sm:order-2 sm:justify-end">
+                                    {socialLinks.map((social) => (
+                                        <a
+                                            key={social.label}
+                                            href={social.href}
+                                            aria-label={social.label}
+                                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/5 text-muted transition-all hover:bg-gold/10 hover:text-gold"
+                                        >
+                                            <social.icon className="h-5 w-5" />
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
-
-                            <p className="text-muted text-sm text-center">
-                                © 2024 شِلّة. جميع الحقوق محفوظة.
-                            </p>
-
-                            <p className="text-muted/60 text-xs text-center md:text-right max-w-md">
+                            <p className="max-w-prose text-pretty text-center text-xs leading-relaxed text-muted/60 sm:max-w-none sm:text-start md:max-w-3xl">
                                 النشاط خاضع لنظام التجارة ونظام المعاملات المدنية ونظام الوكالات التجارية في المملكة العربية السعودية
                             </p>
                         </div>

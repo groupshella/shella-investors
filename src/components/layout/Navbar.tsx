@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent, Easing, EasingFunction } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X, ChevronLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -14,8 +14,6 @@ const navLinks = [
     { name: "كيف تعمل", href: "#how-it-works" },
 ];
 
-const easing = [0.25, 0.46, 0.45, 0.94];
-
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,27 +23,20 @@ export default function Navbar() {
 
     const { scrollY } = useScroll();
 
-    // Smart hide/show on scroll direction (Ultra-Contextual Navigation trend)
     useMotionValueEvent(scrollY, "change", (latest) => {
-        const currentScrollY = latest;
-
-        // Detect scroll direction
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        if (latest > lastScrollY && latest > 100) {
             setIsVisible(false);
         } else {
             setIsVisible(true);
         }
-
-        setLastScrollY(currentScrollY);
-        setIsScrolled(currentScrollY > 20);
+        setLastScrollY(latest);
+        setIsScrolled(latest > 20);
     });
 
-    // Active section detection
     useEffect(() => {
         const handleScroll = () => {
             const sections = navLinks.map((link) => link.href.replace("#", ""));
             const scrollPosition = window.scrollY + 150;
-
             for (let i = sections.length - 1; i >= 0; i--) {
                 const element = document.getElementById(sections[i]);
                 if (element && element.offsetTop <= scrollPosition) {
@@ -54,89 +45,83 @@ export default function Navbar() {
                 }
             }
         };
-
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Lock body scroll when mobile menu is open
     useEffect(() => {
-        if (isMobileMenuOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "unset";
-        }
-        return () => {
-            document.body.style.overflow = "unset";
-        };
+        document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
+        return () => { document.body.style.overflow = "unset"; };
     }, [isMobileMenuOpen]);
 
     const handleLinkClick = useCallback((href: string) => {
         setIsMobileMenuOpen(false);
-        const element = document.querySelector(href);
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
-        }
+        setTimeout(() => {
+            const element = document.querySelector(href);
+            if (element) element.scrollIntoView({ behavior: "smooth" });
+        }, 100);
     }, []);
 
     return (
         <>
             <motion.header
                 initial={{ y: -100, opacity: 0 }}
-                animate={{
-                    y: isVisible ? 0 : -100,
-                    opacity: isVisible ? 1 : 0
-                }}
-                transition={{ duration: 0.4, ease: easing as unknown as Easing }}
+                animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
+                transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="fixed top-0 left-0 right-0 z-50"
             >
-                <nav
-                    className={`relative transition-all duration-500 ${isScrolled
-                        ? "mx-3 sm:mx-4 mt-3 rounded-2xl border border-dark-200/30 bg-dark-50/95 backdrop-blur-xl shadow-lg shadow-primary/10"
-                        : "bg-transparent"
-                        }`}
-                >
-                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="flex h-[72px] items-center justify-between">
-                            {/* Logo */}
-                            <Link href="/" className="group relative flex items-center gap-3">
-                                <motion.div
-                                    whileHover={{ scale: 1.05, rotate: -3 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-dark-50 shadow-lg shadow-primary/20 ring-1 ring-dark-200/80"
-                                >
-                                    <img src="/favicon.ico" alt="شِلّة" width={40} height={40} className="h-full w-full object-cover" />
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent" />
-                                </motion.div>
+                <nav className={`relative transition-all duration-400 ${isScrolled
+                    ? "mx-3 mt-3 rounded-2xl border border-dark-200/60 bg-white/95 backdrop-blur-xl shadow-xl shadow-primary/8"
+                    : "bg-transparent"
+                    }`}>
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <div className="flex h-16 items-center justify-between">
 
+                            {/* Logo */}
+                            <Link href="/" className="group flex items-center gap-2.5 shrink-0">
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white border border-dark-200/40"
+                                >
+                                    <div className="absolute inset-0 rounded-xl bg-white/10" />
+                                    <img
+                                        src="/favicon.ico"
+                                        alt=""
+                                        width={28}
+                                        height={28}
+                                        className="size-full object-contain"
+                                        aria-hidden
+                                    />
+                                </motion.div>
                                 <div className="flex flex-col">
-                                    <span className="text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-gold">
+                                    <span className="text-lg font-black text-foreground group-hover:text-primary transition-colors leading-none">
                                         شِلّة
                                     </span>
-                                    <span className="text-[10px] font-medium tracking-widest text-muted uppercase">
-                                        Shella Group
+                                    <span className="text-[9px] font-medium text-muted tracking-widest leading-none mt-0.5">
+                                        SHELLA GROUP
                                     </span>
                                 </div>
                             </Link>
 
-                            {/* Desktop Navigation - Liquid Glass Pills */}
-                            <div className="hidden lg:flex items-center gap-1 rounded-full bg-primary/5 border border-dark-200/30 p-1 backdrop-blur-md">
+                            {/* Desktop Nav */}
+                            <div className="hidden lg:flex items-center gap-0.5 rounded-2xl bg-dark-100/80 border border-dark-200/50 p-1">
                                 {navLinks.map((link) => {
                                     const isActive = activeSection === link.href.replace("#", "");
                                     return (
                                         <button
                                             key={link.name}
                                             onClick={() => handleLinkClick(link.href)}
-                                            className="relative px-4 py-2 text-sm font-medium transition-colors duration-300"
+                                            className="relative px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200"
                                         >
                                             {isActive && (
                                                 <motion.div
                                                     layoutId="activeNav"
-                                                    className="absolute inset-0 rounded-full bg-primary/10 ring-1 ring-primary/20"
-                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                    className="absolute inset-0 rounded-xl bg-white shadow-sm border border-dark-200/40"
+                                                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                                                 />
                                             )}
-                                            <span className={`relative z-10 ${isActive ? "text-foreground" : "text-muted hover:text-foreground/80"}`}>
+                                            <span className={`relative z-10 ${isActive ? "text-primary font-bold" : "text-muted hover:text-foreground"}`}>
                                                 {link.name}
                                             </span>
                                         </button>
@@ -145,96 +130,92 @@ export default function Navbar() {
                             </div>
 
                             {/* Desktop CTA */}
-                            <div className="hidden lg:flex items-center gap-3">
+                            <div className="hidden lg:flex items-center gap-2">
                                 <Link
                                     href="#login"
-                                    className="group relative px-5 py-2.5 text-sm font-medium text-foreground/70 transition-all hover:text-foreground"
+                                    className="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors rounded-xl hover:bg-dark-100"
                                 >
-                                    <span className="relative z-10">تسجيل الدخول</span>
-                                    <motion.div
-                                        className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100"
-                                        transition={{ duration: 0.2 }}
-                                    />
+                                    تسجيل الدخول
                                 </Link>
-
                                 <Link
                                     href="#partnership"
-                                    className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-gold to-gold-light px-6 py-2.5 text-sm font-bold text-foreground shadow-lg shadow-gold/25 transition-all hover:shadow-gold/35 hover:scale-[1.02] active:scale-[0.98]"
+                                    className="group relative overflow-hidden btn-primary text-sm px-5 py-2.5"
                                 >
-                                    <span className="relative z-10 flex items-center gap-2">
-                                        <Sparkles size={14} className="opacity-70" />
-                                        ابدأ الآن
-                                    </span>
+                                    <Sparkles size={13} className="opacity-80" />
+                                    ابدأ الآن
                                     <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                                 </Link>
                             </div>
 
                             {/* Mobile Menu Button */}
-                            {!isMobileMenuOpen && (
+                            {!isMobileMenuOpen &&
                                 <button
-                                    onClick={() => setIsMobileMenuOpen(true)}
-                                    className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5 ring-1 ring-dark-200/80 transition-colors hover:bg-primary/10 lg:hidden"
-                                    aria-label={isMobileMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
+                                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                    className="lg:hidden flex h-9 w-9 items-center justify-center rounded-xl bg-dark-100 border border-dark-200/60 transition-colors hover:bg-dark-200/50"
+                                    aria-label="القائمة"
                                 >
                                     <AnimatePresence mode="wait">
                                         <motion.div
-                                            key="menu"
+                                            key={isMobileMenuOpen ? "close" : "menu"}
                                             initial={{ rotate: 90, opacity: 0 }}
                                             animate={{ rotate: 0, opacity: 1 }}
                                             exit={{ rotate: -90, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
+                                            transition={{ duration: 0.15 }}
                                         >
-                                            <Menu size={20} className="text-foreground" />
+                                            <Menu size={18} className="text-foreground" />
                                         </motion.div>
                                     </AnimatePresence>
                                 </button>
-                            )}
+                            }
                         </div>
                     </div>
                 </nav>
             </motion.header>
 
-            {/* Mobile Menu - Native App Quality Overlay */}
+            {/* Mobile Menu */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <>
-                        {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="fixed inset-0 z-40 bg-foreground/50 backdrop-blur-sm"
+                            className="fixed inset-0 z-40 bg-foreground/40 backdrop-blur-sm"
                             onClick={() => setIsMobileMenuOpen(false)}
                         />
-
-                        {/* Menu Panel */}
                         <motion.div
-                            initial={{ x: "100%", opacity: 0.5 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: "100%", opacity: 0.5 }}
-                            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                            className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-dark-50 border-l border-dark-200/60 shadow-2xl"
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "spring", damping: 28, stiffness: 280 }}
+                            className="fixed inset-y-0 right-0 z-50 w-[88%] max-w-sm bg-white shadow-2xl border-r border-dark-200/40"
                         >
-                            <div className="flex h-full flex-col p-6">
+                            <div className="flex h-full flex-col">
                                 {/* Header */}
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark">
-                                            <span className="text-lg font-bold text-white">ش</span>
+                                <div className="flex items-center justify-between p-5 border-b border-dark-200/40">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-white border border-dark-200/40">
+                                            <img
+                                                src="/favicon.ico"
+                                                alt=""
+                                                width={28}
+                                                height={28}
+                                                className="size-full object-contain"
+                                                aria-hidden
+                                            />
                                         </div>
-                                        <span className="text-xl font-bold text-foreground">شِلّة</span>
+                                        <span className="text-lg font-black text-foreground">شِلّة</span>
                                     </div>
                                     <button
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5 ring-1 ring-dark-200/80"
+                                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-dark-100 border border-dark-200/50"
                                     >
-                                        <X size={20} className="text-foreground" />
+                                        <X size={18} />
                                     </button>
                                 </div>
 
-                                {/* Navigation Links */}
-                                <nav className="flex-1 space-y-1">
+                                {/* Links */}
+                                <nav className="flex-1 overflow-y-auto p-4 space-y-1">
                                     {navLinks.map((link, index) => {
                                         const isActive = activeSection === link.href.replace("#", "");
                                         return (
@@ -242,36 +223,36 @@ export default function Navbar() {
                                                 key={link.name}
                                                 initial={{ opacity: 0, x: 20 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: index * 0.05 + 0.1 }}
+                                                transition={{ delay: index * 0.04 + 0.05 }}
                                                 onClick={() => handleLinkClick(link.href)}
                                                 className={`group flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-right transition-all ${isActive
-                                                    ? "bg-primary/10 text-foreground ring-1 ring-primary/20"
-                                                    : "text-muted hover:bg-primary/5 hover:text-foreground"
+                                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                                    : "text-muted hover:bg-dark-100 hover:text-foreground border border-transparent"
                                                     }`}
                                             >
-                                                <span className="text-base font-medium">{link.name}</span>
+                                                <span className="text-base font-semibold">{link.name}</span>
                                                 <ChevronLeft
-                                                    size={16}
-                                                    className={`transition-transform group-hover:-translate-x-1 ${isActive ? "text-gold" : "text-muted/60"}`}
+                                                    size={15}
+                                                    className={`transition-transform group-hover:-translate-x-0.5 ${isActive ? "text-primary" : "text-muted/50"}`}
                                                 />
                                             </motion.button>
                                         );
                                     })}
                                 </nav>
 
-                                {/* CTA Section */}
-                                <div className="space-y-3 pt-6 border-t border-dark-200/30">
+                                {/* CTA */}
+                                <div className="p-4 space-y-3 border-t border-dark-200/40">
                                     <Link
                                         href="#login"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex w-full items-center justify-center rounded-xl border border-dark-200/30 py-3.5 text-sm font-medium text-foreground/70 hover:bg-primary/5 hover:text-foreground transition-colors"
+                                        className="flex w-full items-center justify-center rounded-xl border border-dark-200/60 py-3 text-sm font-semibold text-muted hover:bg-dark-100 hover:text-foreground transition-colors"
                                     >
                                         تسجيل الدخول
                                     </Link>
                                     <Link
                                         href="#partnership"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold to-gold-light py-3.5 text-sm font-bold text-foreground shadow-lg shadow-gold/25"
+                                        className="btn-primary w-full text-sm py-3.5"
                                     >
                                         <Sparkles size={14} />
                                         ابدأ شراكتك التجارية

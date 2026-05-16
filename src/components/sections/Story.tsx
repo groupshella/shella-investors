@@ -1,9 +1,3 @@
-/**
- * Story Section - Horizontal scrolling timeline on desktop with milestone cards,
- * gold connecting line, and pulse animation on current milestone.
- * @module components/sections/Story
- */
-
 "use client";
 
 import { motion, useInView } from "framer-motion";
@@ -20,54 +14,59 @@ interface Milestone {
 
 const milestones: Milestone[] = [
     {
-        year: "2022",
-        title: "بذرة الفكرة",
-        description: "ولدت رؤية شِلّة من إدراك حاجة السوق لقناة تجارية موثوقة للأفراد",
+        year: "النواة",
+        title: "نواة تجارية للأفراد",
+        description:
+            "انطلقنا إيماناً بأن التجارة ليست حِكراً على المؤسسات الكبرى. \"شِلّة\" هي النواة الأولى للأفراد الراغبين في بناء حضور تجاري بثقة.",
         icon: Lightbulb,
     },
     {
-        year: "2023",
-        title: "التأسيس والإطلاق",
-        description: "إطلاق المنصة الأولى مع نموذج الشراكة التجارية المبتكر",
+        year: "النماذج",
+        title: "نماذج تجارية مبتكرة",
+        description:
+            "نواكب تطوّرات السوق، ونُقدّم نماذج وخطط تجارية متطوّرة، لدعم الاقتصاد الوطني وتحقيق مستهدفات رؤية المملكة 2030 في تطوير القطاع التجاري.",
         icon: Rocket,
     },
     {
-        year: "2024",
-        title: "النمو والتوسع",
-        description: "تجاوزنا 1000 شريك تجاري و45 مليون ريال حجم استثمارات",
+        year: "المدخرات",
+        title: "توجيه المدخرات نحو بناء الثروات",
+        description:
+            "نسعى لتوجيه مدخرات الأفراد نحو تملّك بضائع حقيقية بفواتير موثّقة، تُسهم في بناء ثرواتهم عبر هامش ربح مستهدف من حركة بيع فعلية.",
         icon: TrendingUp,
     },
     {
-        year: "2025",
-        title: "الريادة",
-        description: "أصبحنا منصة الشراكة التجارية الأولى في المملكة العربية السعودية",
+        year: "المرونة",
+        title: "مرونة في الدخول والخروج",
+        description:
+            "نؤمن بضرورة توفير بيئة تجارية مرنة، تُتيح للملاك سهولة دخول الشراكة والخروج منها، عبر استرداد البضاعة عيناً أو نقداً وفق قيمتها السوقية.",
         icon: Award,
-        current: true,
     },
     {
-        year: "2026",
-        title: "المستقبل",
-        description: "توسيع نطاق الخدمات وإطلاق منتجات استثمارية جديدة",
+        year: "محلياً",
+        title: "دعم الاقتصاد المحلي",
+        description:
+            "نُسهم في تعزيز الناتج المحلي عبر تأسيس سوق متكامل لتجارة المواد الاستهلاكية والغذائية، وهي أساسيات تُلامس احتياجات كل أسرة سعودية.",
         icon: Crown,
+        current: true,
     },
 ];
 
 export default function Story() {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const isInView = useInView(ref, { once: true, margin: "-80px" });
 
     return (
-        <section id="story" className="section-padding bg-dark-50 relative overflow-hidden">
+        <section id="story" className="section-padding bg-dark-100/50 relative overflow-hidden">
+            <div className="absolute inset-0 gradient-mesh pointer-events-none" />
+
             <div className="container-custom" ref={ref}>
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.5 }}
                     className="section-header"
                 >
-                    <span className="section-eyebrow">
-                        قصتنا
-                    </span>
+                    <span className="section-eyebrow">قصتنا</span>
                     <h2 className="section-title">
                         رحلة <span className="text-gradient">بناء المستقبل</span>
                     </h2>
@@ -75,41 +74,40 @@ export default function Story() {
 
                 {/* Desktop: Horizontal Timeline */}
                 <div className="hidden lg:block relative">
-                    {/* Gold connecting line */}
-                    <div className="absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+                    {/* Connecting line */}
+                    <div className="absolute top-[52px] left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-                    <div className="flex justify-between items-start gap-4">
+                    <div className="flex justify-between items-start gap-3">
                         {milestones.map((milestone, index) => (
                             <motion.div
                                 key={index}
-                                initial={{ opacity: 0, y: 30 }}
+                                initial={{ opacity: 0, y: 24 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.5, delay: 0.2 + index * 0.15 }}
+                                transition={{ duration: 0.5, delay: 0.15 + index * 0.12 }}
                                 className="relative flex-1 text-center"
                             >
                                 {/* Icon node */}
-                                <div className="relative z-10 w-16 h-16 mx-auto mb-6 rounded-2xl bg-dark-100 border border-dark-200/30 flex items-center justify-center">
-                                    {milestone.current ? (
-                                        <div className="relative">
-                                            <div className="absolute inset-0 rounded-xl bg-gold/30 animate-ping" />
-                                            <milestone.icon className="w-8 h-8 text-gold relative z-10" />
-                                        </div>
-                                    ) : (
-                                        <milestone.icon className="w-8 h-8 text-muted" />
+                                <div className={`relative z-10 w-[52px] h-[52px] mx-auto mb-5 rounded-2xl flex items-center justify-center border-2 transition-all ${milestone.current
+                                    ? "bg-gradient-to-br from-primary to-primary-dark border-primary/30 shadow-lg shadow-primary/30"
+                                    : "bg-white border-dark-200/60 shadow-sm"
+                                    }`}>
+                                    {milestone.current && (
+                                        <div className="absolute inset-0 rounded-2xl bg-primary/20 animate-ping" />
                                     )}
+                                    <milestone.icon className={`w-6 h-6 relative z-10 ${milestone.current ? "text-white" : "text-muted"}`} />
                                 </div>
 
-                                {/* Year badge */}
-                                <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold mb-3 ${milestone.current
-                                    ? "bg-gold/20 text-gold"
-                                    : "bg-primary/5 text-muted"
+                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-3 ${milestone.current
+                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                    : "bg-dark-100 text-muted border border-dark-200/50"
                                     }`}>
                                     {milestone.year}
                                 </span>
 
-                                {/* Content */}
-                                <h3 className="text-lg font-semibold text-foreground mb-2">{milestone.title}</h3>
-                                <p className="text-muted text-sm leading-relaxed px-2">{milestone.description}</p>
+                                <h3 className={`text-base font-bold mb-2 ${milestone.current ? "text-primary" : "text-foreground"}`}>
+                                    {milestone.title}
+                                </h3>
+                                <p className="text-muted text-xs leading-relaxed px-1">{milestone.description}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -117,35 +115,35 @@ export default function Story() {
 
                 {/* Mobile: Vertical Timeline */}
                 <div className="lg:hidden relative">
-                    <div className="absolute right-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gold/40 via-gold/20 to-transparent" />
+                    <div className="absolute right-[27px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/40 via-primary/20 to-transparent" />
 
-                    <div className="space-y-12">
+                    <div className="space-y-8">
                         {milestones.map((milestone, index) => (
                             <motion.div
                                 key={index}
-                                initial={{ opacity: 0, x: 30 }}
+                                initial={{ opacity: 0, x: 24 }}
                                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                                transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                                className="relative flex items-start gap-6 pr-20"
+                                transition={{ duration: 0.45, delay: 0.15 + index * 0.08 }}
+                                className="relative flex items-start gap-5 pr-16"
                             >
                                 {/* Node */}
-                                <div className="absolute right-4 top-0 w-8 h-8 rounded-full bg-dark-100 border border-dark-200/30 flex items-center justify-center">
-                                    {milestone.current ? (
-                                        <div className="w-3 h-3 rounded-full bg-gold animate-pulse" />
-                                    ) : (
-                                        <div className="w-2 h-2 rounded-full bg-dark-400" />
-                                    )}
+                                <div className={`absolute right-3 top-0 w-10 h-10 rounded-xl flex items-center justify-center border ${milestone.current
+                                    ? "bg-gradient-to-br from-primary to-primary-dark border-primary/30 shadow-md shadow-primary/25"
+                                    : "bg-white border-dark-200/60"
+                                    }`}>
+                                    <milestone.icon className={`w-5 h-5 ${milestone.current ? "text-white" : "text-muted"}`} />
                                 </div>
 
-                                {/* Content */}
                                 <div className="flex-1">
-                                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${milestone.current
-                                        ? "bg-gold/20 text-gold"
-                                        : "bg-primary/5 text-muted"
+                                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold mb-2 ${milestone.current
+                                        ? "bg-primary/10 text-primary border border-primary/20"
+                                        : "bg-dark-100 text-muted"
                                         }`}>
                                         {milestone.year}
                                     </span>
-                                    <h3 className="text-lg font-semibold text-foreground mb-2">{milestone.title}</h3>
+                                    <h3 className={`text-base font-bold mb-1.5 ${milestone.current ? "text-primary" : "text-foreground"}`}>
+                                        {milestone.title}
+                                    </h3>
                                     <p className="text-muted text-sm leading-relaxed">{milestone.description}</p>
                                 </div>
                             </motion.div>

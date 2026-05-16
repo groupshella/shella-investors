@@ -3,6 +3,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "شِلّة | منصة الشراكة التجارية",
+  icons: {
+    icon: "/favicon.svg",
+  },
   description: "منصة تجارية مبتكرة تمكّنك من تملّك بضاعة حقيقية وتحقيق هامش ربح مستهدف",
   keywords: ["شِلّة", "شراكة تجارية", "استثمار", "بضاعة", "تجارة إلكترونية"],
   authors: [{ name: "شِلّة" }],

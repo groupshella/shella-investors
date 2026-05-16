@@ -1,144 +1,121 @@
-/**
- * Why Choose Section - 6-card grid with hover effects, alternating accent colors,
- * and bottom CTA banner with gradient background.
- * @module components/sections/WhyChoose
- */
-
 "use client";
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import {
-    Shield,
-    TrendingUp,
-    RefreshCw,
-    Eye,
-    Users,
-    HeadphonesIcon,
-    ArrowLeft
-} from "lucide-react";
+import { Shield, TrendingUp, RefreshCw, Eye, Users, HeadphonesIcon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-interface Reason {
-    icon: React.ElementType;
-    title: string;
-    description: string;
-    accent: "primary" | "gold" | "teal";
-}
-
-const reasons: Reason[] = [
+const reasons = [
     {
         icon: Shield,
         title: "حماية كاملة",
-        description: "بضاعتك مؤمّنة بالكامل مع شركات تأمين مرخصة من البنك المركزي",
-        accent: "primary",
+        description: "بضاعتك مؤمَّنة بالكامل مع شركات تأمين مرخصة من البنك المركزي السعودي",
+        iconBg: "bg-primary/10",
+        iconColor: "text-primary",
+        hover: "hover:border-primary/30 hover:bg-primary/3",
     },
     {
         icon: TrendingUp,
         title: "عوائد مجزية",
-        description: "هامش ربح مستهدف 4.5% شهرياً مع إمكانية النمو التراكمي",
-        accent: "gold",
+        description: "هامش ربح مستهدف 4.5% شهرياً مع إمكانية النمو التراكمي في النموذج الرأسي",
+        iconBg: "bg-gold/10",
+        iconColor: "text-gold",
+        hover: "hover:border-gold/30 hover:bg-gold/3",
     },
     {
         icon: RefreshCw,
         title: "مرونة تامة",
-        description: "استرد بضاعتك عيناً أو نقداً في أي وقت وفق شروط واضحة",
-        accent: "teal",
+        description: "استرد بضاعتك عيناً أو نقداً وفق قيمتها السوقية — مرونة حقيقية في الدخول والخروج",
+        iconBg: "bg-teal/10",
+        iconColor: "text-teal",
+        hover: "hover:border-teal/30 hover:bg-teal/3",
     },
     {
         icon: Eye,
         title: "شفافية مطلقة",
-        description: "تابع استثمارك لحظة بلحظة مع تقارير مفصّلة ولوحة تحكم تفاعلية",
-        accent: "primary",
+        description: "تابع استثمارك لحظة بلحظة مع تقارير شهرية مفصّلة وحق معاينة بضاعتك",
+        iconBg: "bg-primary/10",
+        iconColor: "text-primary",
+        hover: "hover:border-primary/30 hover:bg-primary/3",
     },
     {
         icon: Users,
         title: "مجتمع ناجح",
-        description: "انضم لشبكة من المستثمرين الناجحين وتبادل الخبرات والفرص",
-        accent: "gold",
+        description: "انضم لشبكة تضم أكثر من 1,200 شريك تجاري ناجح وتبادل الخبرات والفرص",
+        iconBg: "bg-gold/10",
+        iconColor: "text-gold",
+        hover: "hover:border-gold/30 hover:bg-gold/3",
     },
     {
         icon: HeadphonesIcon,
         title: "دعم متميز",
-        description: "فريق دعم متخصص جاهز لمساعدتك على مدار الساعة",
-        accent: "teal",
+        description: "فريق دعم متخصص جاهز لمساعدتك على مدار الساعة في كل خطوة",
+        iconBg: "bg-teal/10",
+        iconColor: "text-teal",
+        hover: "hover:border-teal/30 hover:bg-teal/3",
     },
 ];
 
-const accentMap = {
-    primary: "hover:border-primary/30 hover:bg-primary/5",
-    gold: "hover:border-gold/30 hover:bg-gold/5",
-    teal: "hover:border-teal/30 hover:bg-teal/5",
-};
-
-const iconBgMap = {
-    primary: "bg-primary/10 text-primary",
-    gold: "bg-gold/10 text-gold",
-    teal: "bg-teal/10 text-teal",
-};
-
 export default function WhyChoose() {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const isInView = useInView(ref, { once: true, margin: "-80px" });
 
     return (
-        <section id="why-choose" className="section-padding bg-dark">
+        <section id="why-choose" className="section-padding bg-white">
             <div className="container-custom" ref={ref}>
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.5 }}
                     className="section-header"
                 >
-                    <span className="section-eyebrow">
-                        لماذا نحن
-                    </span>
+                    <span className="section-eyebrow">لماذا نحن</span>
                     <h2 className="section-title">
                         مزايا <span className="text-gradient">تستحق الثقة</span>
                     </h2>
+                    <p className="text-muted">كل ما تحتاجه لاتخاذ قرار استثماري مثمر وآمن</p>
                 </motion.div>
 
                 {/* Cards Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-20">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto mb-16">
                     {reasons.map((reason, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
-                            transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            className={`card-glass p-8 transition-all duration-300 ${accentMap[reason.accent]}`}
+                            transition={{ duration: 0.4, delay: 0.15 + index * 0.07 }}
+                            whileHover={{ y: -3, transition: { duration: 0.15 } }}
+                            className={`p-6 rounded-2xl border border-dark-200/50 bg-white shadow-sm cursor-default transition-all duration-200 ${reason.hover} hover:shadow-md`}
                         >
-                            <div className={`w-14 h-14 rounded-2xl ${iconBgMap[reason.accent]} flex items-center justify-center mb-6`}>
-                                <reason.icon className="w-7 h-7" />
+                            <div className={`w-12 h-12 rounded-2xl ${reason.iconBg} flex items-center justify-center mb-4`}>
+                                <reason.icon className={`w-6 h-6 ${reason.iconColor}`} />
                             </div>
-                            <h3 className="text-xl font-semibold text-foreground mb-3">{reason.title}</h3>
-                            <p className="text-muted leading-relaxed">{reason.description}</p>
+                            <h3 className="text-base font-bold text-foreground mb-2">{reason.title}</h3>
+                            <p className="text-muted text-sm leading-relaxed">{reason.description}</p>
                         </motion.div>
                     ))}
                 </div>
 
                 {/* CTA Banner */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.6 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
                     className="relative rounded-3xl overflow-hidden"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-gold/10 to-primary/20" />
-                    <div className="absolute inset-0 backdrop-blur-3xl" />
-                    <div className="absolute inset-0 bg-dark-50/50" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-teal/8 to-gold/10" />
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm" />
 
                     <div className="relative z-10 p-8 md:p-12 text-center">
-                        <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                        <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3">
                             جاهز لبدء رحلة استثمارك؟
                         </h3>
-                        <p className="text-muted mb-8 max-w-xl mx-auto">
-                            انضم لآلاف الشركاء الناجحين وابدأ ببناء مستقبلك المالي اليوم
+                        <p className="text-muted mb-7 max-w-lg mx-auto text-sm md:text-base">
+                            انضم لأكثر من 1,200 شريك تجاري ناجح وابدأ ببناء مستقبلك المالي اليوم
                         </p>
                         <Link
                             href="#partnership"
-                            className="inline-flex items-center gap-2 btn-gold"
+                            className="btn-primary inline-flex items-center gap-2 text-base px-8 py-4 rounded-2xl"
                         >
                             ابدأ الآن
                             <ArrowLeft className="w-5 h-5" />
