@@ -180,7 +180,7 @@ export default function Navbar() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-40 bg-foreground/40 backdrop-blur-sm"
+                            className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
                             onClick={() => setIsMobileMenuOpen(false)}
                         />
                         <motion.div
